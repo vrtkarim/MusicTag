@@ -32,12 +32,12 @@ body:
 ```http
   POST /api/music/setdata
 ```
-#### SET data
+#### Set artwork
 
 ```http
   POST /api/music/setartwork
 ```
-#### Get Modified Music
+#### Get modified music file
 
 ```http
   GET /api/music/downloadmusic
