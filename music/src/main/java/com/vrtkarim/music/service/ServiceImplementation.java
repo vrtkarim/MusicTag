@@ -2,6 +2,7 @@ package com.vrtkarim.music.service;
 
 import com.vrtkarim.music.repository.MusicRepository;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.TagException;
@@ -28,5 +29,25 @@ public class ServiceImplementation implements MusicService{
     @Override
     public byte[] getImage(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         return musicRepository.getArtWork(file);
+    }
+
+    @Override
+    public void setData(File file, Map<String, String> data) throws CannotWriteException, TagException, ReadOnlyFileException, IOException, CannotReadException, InvalidAudioFrameException {
+        musicRepository.setData(
+                file,
+                data.get("title"),
+                data.get("artist"),
+                data.get("album"),
+                data.get("year"),
+                data.get("genre"),
+                data.get("track"),
+                data.get("comment"),
+                data.get("composer")
+        );
+    }
+
+    @Override
+    public void setImage(File image, File music) throws CannotWriteException, TagException, ReadOnlyFileException, IOException, CannotReadException, InvalidAudioFrameException {
+        musicRepository.setArtWork(image, music);
     }
 }

@@ -4,6 +4,7 @@ package com.vrtkarim.music.repository;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
+import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
 import org.jaudiotagger.audio.exceptions.ReadOnlyFileException;
 import org.jaudiotagger.tag.FieldKey;
@@ -39,15 +40,10 @@ public class MusicRepository {
     }
     public byte[] getArtWork(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         AudioFile audioFile = AudioFileIO.read(file);
-
-        // Get the tag (metadata)
         Tag tag = audioFile.getTag();
-
-        // Get the artwork
         Artwork artwork = tag.getFirstArtwork();
 
         if (artwork != null) {
-            // Get the binary data of the image
             byte[] imageData = artwork.getBinaryData();
             return  imageData;
             // You can now process the BufferedImage as needed
@@ -58,18 +54,25 @@ public class MusicRepository {
 
     }
 
-    private static void saveImageToFile(byte[] imageData, String fileName) throws IOException {
-        try (FileOutputStream fos = new FileOutputStream(fileName)) {
-            fos.write(imageData);
-            System.out.println("Image saved to " + fileName);
-        }
+    public void setData(File file, String title, String artist, String album, String year, String genre, String track, String comment, String composer) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
+        AudioFile audioFile = AudioFileIO.read(file);
+        Tag tag = audioFile.getTag();
+        tag.setField(FieldKey.TITLE, title);
+        tag.setField(FieldKey.COMMENT, comment);
+        tag.setField(FieldKey.COMPOSER, composer);
+        tag.setField(FieldKey.ARTIST, artist);
+        tag.setField(FieldKey.ALBUM, album);
+        tag.setField(FieldKey.YEAR, year);
+        tag.setField(FieldKey.GENRE, genre);
+        audioFile.commit();
     }
+    public void setArtWork(File image, File music) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+        AudioFile audioFile = AudioFileIO.read(music);
+        Tag tag = audioFile.getTag();
 
-    // Convert byte array to BufferedImage
-    private static BufferedImage getImageFromBytes(byte[] imageData) throws IOException {
-        try (ByteArrayInputStream bis = new ByteArrayInputStream(imageData)) {
-            return ImageIO.read(bis);
-        }
+        // Creating artwork from file
+        Artwork artwork = Artwork.createArtworkFromFile(image );
+
     }
 
 }
