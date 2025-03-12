@@ -1,18 +1,7 @@
 
-# Spring Boot api for reading and manipulating music file's metadata
+# Spring Boot API reading and manipulating music file metadata
 
-
-using this api you can upload your music file (all formats supported) and read its metadata (artist..., artwork)
-## Contributing
-
-Contributions are always welcome!
-
-Pull requests are welcome. For major changes, please open an issue first
-to discuss what you would like to change.
-
-Please make sure to update tests as appropriate.
-
-
+A Spring Boot REST API for reading and manipulating music file metadata with support for all major ID3 tag versions (ID3v1, ID3v2.2, ID3v2.3, ID3v2.4) and other popular audio formats.
 ## API Reference
 
 #### upload your music
@@ -29,9 +18,35 @@ Please make sure to update tests as appropriate.
 ```
 
 
+#### Set data
+body:
+{
+  "title": "Song Title",
+  "comment": "This is a great song",
+  "composer": "John Doe",
+  "artist": "The Band Name",
+  "album": "Amazing Album",
+  "year": "2025",
+  "genre": "Rock"
+}
+```http
+  POST /api/music/setdata
+```
+#### SET data
+
+```http
+  POST /api/music/setartwork
+```
+#### Get Modified Music
+
+```http
+  GET /api/music/downloadmusic
+```
 
 
-## Appendix
-
-api is under development
+## Infos
+- API is still under development
+- No Exceptions are handled
+- only mp3 files are handled till now
+- Other formats will be supported soon
 
