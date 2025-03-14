@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface MusicService {
-    Map<String, String> getData(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException;
-    byte[] getImage(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException;
-    void setData(File file, Map<String, String> data) throws CannotWriteException, TagException, ReadOnlyFileException, IOException, CannotReadException, InvalidAudioFrameException;
-    void setImage(File music, File image) throws CannotWriteException, TagException, ReadOnlyFileException, IOException, CannotReadException, InvalidAudioFrameException;
-
+    Map<String, String> getData(File file);
+    byte[] getImage(File file);
+    void setData(File file, Map<String, String> data);
+    void setImage(File music, File image);
+    void tryToRead(File file);
 }

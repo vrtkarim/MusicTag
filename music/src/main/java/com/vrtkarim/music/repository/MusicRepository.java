@@ -1,6 +1,7 @@
 package com.vrtkarim.music.repository;
 
 
+import com.vrtkarim.music.exceptions.UploadFailed;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
@@ -24,6 +25,14 @@ import java.util.Map;
 
 @Repository
 public class MusicRepository {
+    public void tryToRead(File file){
+        // Try to read the file as an audio file
+        try {
+            AudioFile audioFile = AudioFileIO.read(file);
+        }catch (Exception e){
+            throw new UploadFailed("Uploaded file is not a supported music file");
+        }
+    }
     public Map<String, String> getMusicData(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         Map<String, String> map = new HashMap<>();
         AudioFile audioFile = AudioFileIO.read(file);
