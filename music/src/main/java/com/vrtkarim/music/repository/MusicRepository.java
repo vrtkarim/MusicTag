@@ -25,8 +25,28 @@ import java.util.Map;
 
 @Repository
 public class MusicRepository {
+    File tempFile;
+    Map<String, String > map ;
+    public Map<String, String > setNameExtension(String name, String extension){
+        map = new HashMap<>();
+        map.put("name", name);
+        map.put("extension", extension);
+        return map;
+    }
+    public void createTempFile(byte[] data) throws IOException {
+        tempFile = File.createTempFile("temp", map.get("extension"));
+        System.out.println(tempFile);
+        tempFile.deleteOnExit();
+        FileOutputStream fos = new FileOutputStream(tempFile);
+        fos.write(data);
+        fos.close();
+    }
+
+    public Map<String, String> getMap() {
+        return map;
+    }
+
     public void tryToRead(File file){
-        // Try to read the file as an audio file
         try {
             AudioFile audioFile = AudioFileIO.read(file);
         }catch (Exception e){
@@ -53,9 +73,7 @@ public class MusicRepository {
         Artwork artwork = tag.getFirstArtwork();
 
         if (artwork != null) {
-            byte[] imageData = artwork.getBinaryData();
-            return  imageData;
-            // You can now process the BufferedImage as needed
+            return artwork.getBinaryData();
         } else {
             System.out.println("No artwork found in the file.");
             return null;
@@ -78,8 +96,6 @@ public class MusicRepository {
     public void setArtWork(File image, File music) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
-
-        // Creating artwork from file
         Artwork artwork = Artwork.createArtworkFromFile(image );
 
     }

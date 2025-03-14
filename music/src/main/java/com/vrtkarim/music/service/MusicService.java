@@ -16,4 +16,10 @@ public interface MusicService {
     void setData(File file, Map<String, String> data);
     void setImage(File music, File image);
     void tryToRead(File file);
+
+    Map<String,String> setNameExtension(String name);
+    Map<String,String> getNameExtension();
+    void setTempFile(byte[] data);
+
+
 }

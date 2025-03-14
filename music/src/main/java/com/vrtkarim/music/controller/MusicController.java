@@ -1,6 +1,7 @@
 package com.vrtkarim.music.controller;
 
 import com.vrtkarim.music.exceptions.ChangesFailed;
+import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
 import com.vrtkarim.music.service.MusicService;
 import org.jaudiotagger.audio.AudioFile;
@@ -35,9 +36,18 @@ public class MusicController {
     }
     @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) {
+        String name = file.getOriginalFilename();
+        if (!(name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".flac") ||
+                name.endsWith(".ogg") || name.endsWith(".aac") || name.endsWith(".m4a") ||
+                name.endsWith(".wma") || name.endsWith(".aiff"))) {
 
+            throw new UploadFailed("Invalid file format");
+
+        }
+        System.out.println(file.getOriginalFilename());
         String fileUploadStatus;
-        File temp = new File("temp.mp3");
+        Map<String, String> map = musicService.setNameExtension(file.getOriginalFilename());
+        File temp = new File("temp."+map.get("extension"));
 
         // Try block to check exceptions
         try {
@@ -45,23 +55,19 @@ public class MusicController {
             fout.write(file.getBytes());
             fout.close();
             fileUploadStatus = "File Uploaded Successfully";
-            try {
-
-            }catch (Exception e) {
-                throw new UploadFailed("file is not a valid audio file");
-            }
 
         }
 
         // Catch block to handle exceptions
         catch (Exception e) {
-            throw new UploadFailed(e.getMessage());
+            throw new FileError(e.getMessage());
         }
         return fileUploadStatus;
     }
     @PostMapping("/getdata")
     public ResponseEntity<Map<String, String> >getData(){
-        File file = new File("temp.mp3");
+        Map<String, String> map = musicService.getNameExtension();
+        File file = new File("temp."+map.get("extension"));
         return new ResponseEntity<>(musicService.getData(file), HttpStatus.FOUND);
 
     }
@@ -74,11 +80,11 @@ public class MusicController {
         // Setting up values for contentType and headerValue
         String contentType = "image/png";
         String headerValue = "attachment; filename=\"" + "artwork.png" + "\"";
-
+        Map<String, String> map = musicService.getNameExtension();
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(musicService.getImage(new File("temp.mp3")));
+                .body(musicService.getImage(new File("temp."+map.get("extension"))));
     }
     @PostMapping("/setdata")
     public ResponseEntity<String> setData(@RequestBody Map<String, String> data) {
@@ -90,13 +96,17 @@ public class MusicController {
 //                "album": "Amazing Album",
 //                "year": "2025",
 //                "genre": "Rock"
-            musicService.setData(new File("temp.mp3"), data);
+
+        Map<String, String> map = musicService.getNameExtension();
+        System.out.println(map.get("extension"));
+            musicService.setData(new File("temp."+map.get("extension")), data);
             return new ResponseEntity<>("Changes saved successfully", HttpStatus.OK);
 
     }
     @PostMapping("/setartwork")
     public  ResponseEntity<?>  setArtWork(@RequestParam("file") MultipartFile file) {
-        File temp = new File("temp.mp3");
+        Map<String, String> map = musicService.getNameExtension();
+        File temp = new File("temp."+map.get("extension"));
         File img = new File("image.png");
         try(FileOutputStream fs = new FileOutputStream(img)){
                 fs.write(file.getBytes());
@@ -111,15 +121,14 @@ public class MusicController {
     @GetMapping("/downloadmusic")
     public ResponseEntity<?> downloadMusic() throws IOException {
         HttpHeaders headers = new HttpHeaders();
-
-        // Setting up values for contentType and headerValue
-        String contentType = "image/png";
-        String headerValue = "attachment; filename=\"" + "music.mp3" + "\"";
+        Map<String, String> map = musicService.getNameExtension();
+        String contentType = "music/"+map.get("extension");
+        String headerValue = "attachment; filename=\"" + "music."+map.get("extension") + "\"";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(Files.readAllBytes(Path.of("temp.mp3")));
+                .body(Files.readAllBytes(Path.of("temp."+map.get("extension"))));
     }
 
 
