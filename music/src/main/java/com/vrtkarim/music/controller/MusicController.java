@@ -25,7 +25,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Map;
+
+
 
 @RestController
 @RequestMapping("/api/music")
@@ -37,20 +40,23 @@ public class MusicController {
     @PostMapping("/upload")
     public String upload(@RequestParam("file") MultipartFile file) {
         String name = file.getOriginalFilename();
+        assert name != null;
         if (!(name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".flac") ||
                 name.endsWith(".ogg") || name.endsWith(".aac") || name.endsWith(".m4a") ||
                 name.endsWith(".wma") || name.endsWith(".aiff"))) {
 
             throw new UploadFailed("Invalid file format");
-
         }
-        System.out.println(file.getOriginalFilename());
         String fileUploadStatus;
         Map<String, String> map = musicService.setNameExtension(file.getOriginalFilename());
-        File temp = new File("temp."+map.get("extension"));
 
-        // Try block to check exceptions
         try {
+
+
+            long millis = System.currentTimeMillis() % 1000;
+
+            File temp =  File.createTempFile(Long.toString(millis), map.get("extension"));
+            System.out.println(temp.getPath());
             FileOutputStream fout = new FileOutputStream(temp);
             fout.write(file.getBytes());
             fout.close();
@@ -73,11 +79,7 @@ public class MusicController {
     }
     @GetMapping("getartwork")
     public ResponseEntity<?> getartwork(){
-
-
         HttpHeaders headers = new HttpHeaders();
-
-        // Setting up values for contentType and headerValue
         String contentType = "image/png";
         String headerValue = "attachment; filename=\"" + "artwork.png" + "\"";
         Map<String, String> map = musicService.getNameExtension();
@@ -88,15 +90,6 @@ public class MusicController {
     }
     @PostMapping("/setdata")
     public ResponseEntity<String> setData(@RequestBody Map<String, String> data) {
-//        {
-//            "title": "Song Title",
-//                "comment": "This is a great song",
-//                "composer": "John Doe",
-//                "artist": "The Band Name",
-//                "album": "Amazing Album",
-//                "year": "2025",
-//                "genre": "Rock"
-
         Map<String, String> map = musicService.getNameExtension();
         System.out.println(map.get("extension"));
             musicService.setData(new File("temp."+map.get("extension")), data);
@@ -106,11 +99,11 @@ public class MusicController {
     @PostMapping("/setartwork")
     public  ResponseEntity<?>  setArtWork(@RequestParam("file") MultipartFile file) {
         Map<String, String> map = musicService.getNameExtension();
-        File temp = new File("temp."+map.get("extension"));
+        File music = new File("temp."+map.get("extension"));
         File img = new File("image.png");
         try(FileOutputStream fs = new FileOutputStream(img)){
                 fs.write(file.getBytes());
-            musicService.setImage(temp, img);
+            musicService.setImage(music, img);
         }catch (Exception e){
             throw new ChangesFailed(e.getMessage());
         }
