@@ -11,15 +11,16 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface MusicService {
-    Map<String, String> getData(File file);
-    byte[] getImage(File file);
-    void setData(File file, Map<String, String> data);
-    void setImage(File music, File image);
-    void tryToRead(File file);
+    Map<String, String> getData();
+    byte[] getImage();
+    void setData(Map<String, String> data);
+    void setArtwork(byte[] artwork, String name);
 
-    Map<String,String> setNameExtension(String name);
-    Map<String,String> getNameExtension();
-    void setTempFile(byte[] data);
+    void setMusic (byte[] bytes, String name);
+    byte[] getMusic();
+    String getExtension();
+
+
 
 
 }

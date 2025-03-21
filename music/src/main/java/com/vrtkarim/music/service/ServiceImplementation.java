@@ -17,29 +17,29 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public Map<String, String> getData(File file){
+    public Map<String, String> getData(){
 
         try {
-            return musicRepository.getMusicData(file);
+            return musicRepository.getMusicData();
         }catch (Exception e){
             throw new FileError(e.getMessage()) ;
         }
     }
 
     @Override
-    public byte[] getImage(File file){
+    public byte[] getImage(){
         try {
-            return musicRepository.getArtWork(file);
+            return musicRepository.getArtWork();
         }catch (Exception e){
             throw new FileError(e.getMessage()) ;
         }
     }
 
     @Override
-    public void setData(File file, Map<String, String> data){
+    public void setData(Map<String, String> data){
         try {
             musicRepository.setData(
-                    file,
+
                     data.get("title"),
                     data.get("artist"),
                     data.get("album"),
@@ -55,9 +55,10 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public void setImage(File image, File music){
+    public void setArtwork(byte[] artwork, String name){
         try{
-            musicRepository.setArtWork(image, music);
+            musicRepository.setImage(artwork, name);
+            musicRepository.setArtWork();
         }catch (Exception e){
             throw new UploadFailed(e.getMessage());
         }
@@ -65,31 +66,18 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public void tryToRead(File file) {
-        musicRepository.tryToRead(file);
-    }
-
-
-
-    @Override
-    public Map<String, String> setNameExtension(String name){
-        String extension = name.substring(name.lastIndexOf(".") + 1);
-        return musicRepository.setNameExtension(name, extension);
-
+    public void setMusic(byte[] bytes, String name) {
+        musicRepository.setMusic(bytes,name);
     }
 
     @Override
-    public Map<String, String> getNameExtension() {
-        return musicRepository.getMap();
+    public byte[] getMusic() {
+        return musicRepository.getMusic();
     }
 
     @Override
-    public void setTempFile(byte[] data) {
-        try {
-            musicRepository.createTempFile(data);
-        }catch (Exception e){
-            throw new FileError(e.getMessage()) ;
-        }
+    public String getExtension() {
+        return musicRepository.getExtension();
     }
 
 

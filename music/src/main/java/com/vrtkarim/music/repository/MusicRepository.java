@@ -1,6 +1,7 @@
 package com.vrtkarim.music.repository;
 
 
+import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
@@ -20,42 +21,63 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
 @Repository
 public class MusicRepository {
-    File tempFile;
-    Map<String, String > map ;
-    public Map<String, String > setNameExtension(String name, String extension){
-        map = new HashMap<>();
-        map.put("name", name);
-        map.put("extension", extension);
-        return map;
-    }
-    public void createTempFile(byte[] data) throws IOException {
-        tempFile = File.createTempFile("temp", map.get("extension"));
-        System.out.println(tempFile);
-        tempFile.deleteOnExit();
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        fos.write(data);
-        fos.close();
-    }
-
-    public Map<String, String> getMap() {
-        return map;
-    }
-
-    public void tryToRead(File file){
+    File music;
+    File image;
+    public String getExtension(){
         try {
-            AudioFile audioFile = AudioFileIO.read(file);
-        }catch (Exception e){
-            throw new UploadFailed("Uploaded file is not a supported music file");
+            AudioFile audioFile = AudioFileIO.read(music);
+            return audioFile.getAudioHeader().getFormat();
+        }catch (
+                Exception e
+        ){
+            throw new FileError(e.getMessage());
         }
     }
-    public Map<String, String> getMusicData(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+    public byte[] getMusic(){
+        try {
+           return Files.readAllBytes(Path.of(music.getPath()));
+        }catch (
+                Exception e
+        ){
+            throw new FileError(e.getMessage());
+        }
+    }
+    public void setMusic(byte[] bytes, String name) {
+        long millis = System.currentTimeMillis() % 1000;
+        try {
+            music =  File.createTempFile(Long.toString(millis), name);
+            FileOutputStream fout = new FileOutputStream(music);
+            fout.write(bytes);
+            fout.close();
+
+        }catch (Exception e){
+            throw new FileError(e.getMessage());
+        }
+    }
+    public void setImage(byte[] bytes, String name) {
+        try {
+            image = File.createTempFile("image", name);
+            FileOutputStream fout = new FileOutputStream(image);
+            fout.write(bytes);
+            fout.close();
+        }catch (Exception e){
+            throw new FileError(e.getMessage());
+        }
+
+    }
+
+
+
+    public Map<String, String> getMusicData() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         Map<String, String> map = new HashMap<>();
-        AudioFile audioFile = AudioFileIO.read(file);
+        AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
         map.put("Title: " ,tag.getFirst(FieldKey.TITLE));
         map.put("Artist: " , tag.getFirst(FieldKey.ARTIST));
@@ -67,8 +89,8 @@ public class MusicRepository {
         map.put("Composer: " , tag.getFirst(FieldKey.COMPOSER));
         return map;
     }
-    public byte[] getArtWork(File file) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
-        AudioFile audioFile = AudioFileIO.read(file);
+    public byte[] getArtWork() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+        AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
         Artwork artwork = tag.getFirstArtwork();
 
@@ -81,8 +103,8 @@ public class MusicRepository {
 
     }
 
-    public void setData(File file, String title, String artist, String album, String year, String genre, String track, String comment, String composer) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
-        AudioFile audioFile = AudioFileIO.read(file);
+    public void setData( String title, String artist, String album, String year, String genre, String track, String comment, String composer) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
+        AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
         tag.setField(FieldKey.TITLE, title);
         tag.setField(FieldKey.COMMENT, comment);
@@ -91,12 +113,13 @@ public class MusicRepository {
         tag.setField(FieldKey.ALBUM, album);
         tag.setField(FieldKey.YEAR, year);
         tag.setField(FieldKey.GENRE, genre);
+
         audioFile.commit();
     }
-    public void setArtWork(File image, File music) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+    public void setArtWork() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
-        Artwork artwork = Artwork.createArtworkFromFile(image );
+        Artwork artwork = Artwork.createArtworkFromFile(image);
 
     }
 
