@@ -18,7 +18,9 @@ public interface MusicService {
 
     void setMusic (byte[] bytes, String name);
     byte[] getMusic();
-    String getExtension();
+    String getFileName();
+    void setLyrics(String lyrics);
+    String getLyrics();
 
 
 

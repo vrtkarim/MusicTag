@@ -76,8 +76,18 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public String getExtension() {
-        return musicRepository.getExtension();
+    public String getFileName() {
+        return musicRepository.getFileName();
+    }
+
+    @Override
+    public void setLyrics(String lyrics) {
+        musicRepository.setLyrics(lyrics);
+    }
+
+    @Override
+    public String getLyrics() {
+        return musicRepository.getLyrics();
     }
 
 

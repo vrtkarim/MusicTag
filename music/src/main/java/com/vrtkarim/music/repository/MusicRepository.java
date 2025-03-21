@@ -30,11 +30,9 @@ import java.util.Map;
 public class MusicRepository {
     File music;
     File image;
-    public String getExtension(){
+    public String getFileName(){
         try {
-            AudioFile audioFile = AudioFileIO.read(music);
-            System.out.println(audioFile.getAudioHeader().getFormat());
-            return audioFile.getAudioHeader().getFormat();
+            return music.getName();
         }catch (
                 Exception e
         ){
@@ -104,6 +102,29 @@ public class MusicRepository {
         }
 
     }
+    public void setLyrics(String lyrics){
+        try {
+            AudioFile audioFile = AudioFileIO.read(music);
+            Tag tag = audioFile.getTag();
+            tag.deleteField(FieldKey.LYRICS);
+            tag.setField(FieldKey.LYRICS, lyrics);
+            audioFile.setTag(tag);
+            audioFile.commit();
+        }catch (Exception e){
+            throw new FileError(e.getMessage());
+        }
+
+    }
+    public String getLyrics(){
+        try {
+            AudioFile audioFile = AudioFileIO.read(music);
+            Tag tag = audioFile.getTag();
+            return tag.getFirst(FieldKey.LYRICS);
+
+        }catch (Exception e){
+            throw new FileError(e.getMessage());
+        }
+    }
 
     public void setData( String title, String artist, String album, String year, String genre, String track, String comment, String composer) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
         AudioFile audioFile = AudioFileIO.read(music);
@@ -115,7 +136,6 @@ public class MusicRepository {
         tag.setField(FieldKey.ALBUM, album);
         tag.setField(FieldKey.YEAR, year);
         tag.setField(FieldKey.GENRE, genre);
-
         audioFile.commit();
     }
     public void setArtWork() {

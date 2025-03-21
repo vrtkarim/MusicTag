@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -59,6 +60,18 @@ public class MusicController  {
         }
         return fileUploadStatus;
     }
+    @PostMapping("/setlyrics")
+    public ResponseEntity<String> setLyrics(@RequestParam(value = "text") String text) {
+        System.out.println(text);
+        musicService.setLyrics(text);
+        return new ResponseEntity<>("Lyrics set successfully", HttpStatus.OK);
+    }
+    @PostMapping("/getlyrics")
+    public ResponseEntity<String> getLyrics() {
+        String lyrics = musicService.getLyrics();
+        return new ResponseEntity<>(lyrics, HttpStatus.OK);
+    }
+
     @GetMapping("/getdata")
     public ResponseEntity<Map<String, String> >getData(){
         return new ResponseEntity<>(musicService.getData(), HttpStatus.FOUND);
@@ -98,9 +111,9 @@ public class MusicController  {
     @GetMapping("/downloadmusic")
     public ResponseEntity<?> downloadMusic() throws IOException {
         HttpHeaders headers = new HttpHeaders();
-        String extension = musicService.getExtension();
-        String contentType = "music/"+extension;
-        String headerValue = "attachment; filename=\"" + "ModifiedMusic"+ extension + "\"";
+        String fileName = musicService.getFileName();
+        String contentType = "music/music";
+        String headerValue = "attachment; filename=\"" + "ModifiedMusic"+ fileName + "\"";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
