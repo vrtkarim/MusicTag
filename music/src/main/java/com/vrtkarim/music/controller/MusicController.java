@@ -5,19 +5,16 @@ import com.vrtkarim.music.exceptions.ChangesFailed;
 import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
 import com.vrtkarim.music.service.MusicService;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MaxUploadSizeExceededException;
+
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.ModelAndView;
-import org.w3c.dom.Text;
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -67,9 +64,12 @@ public class MusicController  {
         musicService.setLyrics(text);
         return new ResponseEntity<>("Lyrics set successfully", HttpStatus.OK);
     }
-    @PostMapping("/getlyrics")
+    @GetMapping("/getlyrics")
     public ResponseEntity<String> getLyrics() {
         String lyrics = musicService.getLyrics();
+        if (lyrics.isEmpty()){
+            return new ResponseEntity<>("No Lyrics found", HttpStatus.OK);
+        }
         return new ResponseEntity<>(lyrics, HttpStatus.OK);
     }
 
