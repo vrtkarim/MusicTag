@@ -33,6 +33,7 @@ public class MusicRepository {
     public String getExtension(){
         try {
             AudioFile audioFile = AudioFileIO.read(music);
+            System.out.println(audioFile.getAudioHeader().getFormat());
             return audioFile.getAudioHeader().getFormat();
         }catch (
                 Exception e
@@ -94,6 +95,7 @@ public class MusicRepository {
         Tag tag = audioFile.getTag();
         Artwork artwork = tag.getFirstArtwork();
 
+
         if (artwork != null) {
             return artwork.getBinaryData();
         } else {
@@ -116,10 +118,17 @@ public class MusicRepository {
 
         audioFile.commit();
     }
-    public void setArtWork() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
-        AudioFile audioFile = AudioFileIO.read(music);
-        Tag tag = audioFile.getTag();
-        Artwork artwork = Artwork.createArtworkFromFile(image);
+    public void setArtWork() {
+        try {
+            AudioFile audioFile = AudioFileIO.read(music);
+            Tag tag = audioFile.getTag();
+            tag.deleteArtworkField();
+            Artwork artwork = Artwork.createArtworkFromFile(image);
+            tag.setField(artwork);
+            audioFile.commit();
+        }catch (Exception e){
+            throw new FileError(e.getMessage());
+        }
 
     }
 
