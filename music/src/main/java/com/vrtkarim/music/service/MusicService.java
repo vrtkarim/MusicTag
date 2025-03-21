@@ -1,5 +1,6 @@
 package com.vrtkarim.music.service;
 
+import com.vrtkarim.music.entities.Data;
 import org.jaudiotagger.audio.exceptions.CannotReadException;
 import org.jaudiotagger.audio.exceptions.CannotWriteException;
 import org.jaudiotagger.audio.exceptions.InvalidAudioFrameException;
@@ -11,9 +12,9 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface MusicService {
-    Map<String, String> getData();
+    Data getData();
     byte[] getImage();
-    void setData(Map<String, String> data);
+    void setData(Data data);
     void setArtwork(byte[] artwork, String name);
 
     void setMusic (byte[] bytes, String name);

@@ -1,5 +1,6 @@
 package com.vrtkarim.music.controller;
 
+import com.vrtkarim.music.entities.Data;
 import com.vrtkarim.music.exceptions.ChangesFailed;
 import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
@@ -73,7 +74,7 @@ public class MusicController  {
     }
 
     @GetMapping("/getdata")
-    public ResponseEntity<Map<String, String> >getData(){
+    public ResponseEntity<Data>getData(){
         return new ResponseEntity<>(musicService.getData(), HttpStatus.FOUND);
 
     }
@@ -89,8 +90,7 @@ public class MusicController  {
                 .body(musicService.getImage());
     }
     @PostMapping("/setdata")
-    public ResponseEntity<String> setData(@RequestBody Map<String, String> data) {
-
+    public ResponseEntity<String> setData(@RequestBody Data data) {
             musicService.setData(data);
             return new ResponseEntity<>("Changes saved successfully", HttpStatus.OK);
 

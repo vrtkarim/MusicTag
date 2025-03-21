@@ -1,6 +1,7 @@
 package com.vrtkarim.music.repository;
 
 
+import com.vrtkarim.music.entities.Data;
 import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
 import org.jaudiotagger.audio.AudioFile;
@@ -31,6 +32,7 @@ public class MusicRepository {
     File music;
     File image;
     public String getFileName(){
+
         try {
             return music.getName();
         }catch (
@@ -39,7 +41,8 @@ public class MusicRepository {
             throw new FileError(e.getMessage());
         }
     }
-    public byte[] getMusic(){
+    public byte[] getMusic() {
+
         try {
            return Files.readAllBytes(Path.of(music.getPath()));
         }catch (
@@ -60,7 +63,11 @@ public class MusicRepository {
             throw new FileError(e.getMessage());
         }
     }
-    public void setImage(byte[] bytes, String name) {
+    public void setImage(byte[] bytes, String name) throws CannotReadException {
+        if (music == null || image ==null) {
+            throw  new CannotReadException("Music file not found");
+
+        }
         try {
             image = File.createTempFile("image", name);
             FileOutputStream fout = new FileOutputStream(image);
@@ -74,19 +81,19 @@ public class MusicRepository {
 
 
 
-    public Map<String, String> getMusicData() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
-        Map<String, String> map = new HashMap<>();
+    public Data getMusicData() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
+
+        if (music == null) {
+            throw  new CannotReadException("Music file not found");
+
+        }
         AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
-        map.put("Title: " ,tag.getFirst(FieldKey.TITLE));
-        map.put("Artist: " , tag.getFirst(FieldKey.ARTIST));
-        map.put("Album: " , tag.getFirst(FieldKey.ALBUM));
-        map.put("Year: " , tag.getFirst(FieldKey.YEAR));
-        map.put("Genre: " , tag.getFirst(FieldKey.GENRE));
-        map.put("Track: " , tag.getFirst(FieldKey.TRACK));
-        map.put("Comment: " , tag.getFirst(FieldKey.COMMENT));
-        map.put("Composer: " , tag.getFirst(FieldKey.COMPOSER));
-        return map;
+
+        Data data = new Data();
+        return Data.builder().title(tag.getFirst(FieldKey.TITLE)).artist(tag.getFirst(FieldKey.ARTIST))
+                .album(tag.getFirst(FieldKey.ALBUM)).year(tag.getFirst(FieldKey.YEAR)).genre(tag.getFirst(FieldKey.GENRE))
+                .comment(tag.getFirst(FieldKey.COMMENT)).composer(tag.getFirst(FieldKey.COMPOSER)).build();
     }
     public byte[] getArtWork() throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
         AudioFile audioFile = AudioFileIO.read(music);
@@ -126,16 +133,16 @@ public class MusicRepository {
         }
     }
 
-    public void setData( String title, String artist, String album, String year, String genre, String track, String comment, String composer) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
+    public void setData(Data data) throws IOException, CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, CannotWriteException {
         AudioFile audioFile = AudioFileIO.read(music);
         Tag tag = audioFile.getTag();
-        tag.setField(FieldKey.TITLE, title);
-        tag.setField(FieldKey.COMMENT, comment);
-        tag.setField(FieldKey.COMPOSER, composer);
-        tag.setField(FieldKey.ARTIST, artist);
-        tag.setField(FieldKey.ALBUM, album);
-        tag.setField(FieldKey.YEAR, year);
-        tag.setField(FieldKey.GENRE, genre);
+        tag.setField(FieldKey.TITLE, data.getTitle().isEmpty() ?tag.getFirst(FieldKey.TITLE):data.getTitle());
+        tag.setField(FieldKey.COMMENT, data.getComment().isEmpty()?tag.getFirst(FieldKey.COMMENT):data.getComment());
+        tag.setField(FieldKey.COMPOSER, data.getComposer().isEmpty()?tag.getFirst(FieldKey.COMPOSER):data.getComposer());
+        tag.setField(FieldKey.ARTIST, data.getArtist().isEmpty()?tag.getFirst(FieldKey.ARTIST):data.getArtist());
+        tag.setField(FieldKey.ALBUM, data.getAlbum().isEmpty()?tag.getFirst(FieldKey.ALBUM):data.getAlbum());
+        tag.setField(FieldKey.YEAR, data.getYear().isEmpty()?tag.getFirst(FieldKey.YEAR):data.getYear());
+        tag.setField(FieldKey.GENRE, data.getGenre().isEmpty()?tag.getFirst(FieldKey.GENRE):data.getGenre());
         audioFile.commit();
     }
     public void setArtWork() {

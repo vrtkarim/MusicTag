@@ -1,5 +1,6 @@
 package com.vrtkarim.music.service;
 
+import com.vrtkarim.music.entities.Data;
 import com.vrtkarim.music.exceptions.FileError;
 import com.vrtkarim.music.exceptions.UploadFailed;
 import com.vrtkarim.music.repository.MusicRepository;
@@ -17,7 +18,7 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public Map<String, String> getData(){
+    public Data getData(){
 
         try {
             return musicRepository.getMusicData();
@@ -36,18 +37,10 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public void setData(Map<String, String> data){
+    public void setData(Data data){
         try {
             musicRepository.setData(
-
-                    data.get("title"),
-                    data.get("artist"),
-                    data.get("album"),
-                    data.get("year"),
-                    data.get("genre"),
-                    data.get("track"),
-                    data.get("comment"),
-                    data.get("composer")
+                    data
             );
         }catch (Exception e){
             throw new UploadFailed(e.getMessage());
