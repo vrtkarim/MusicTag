@@ -3,7 +3,7 @@
 
 A Spring Boot REST API for reading and manipulating music file metadata with support for all major ID3 tag versions (ID3v1, ID3v2.2, ID3v2.3, ID3v2.4) and other popular audio formats.
 
-It supports many audio formats
+
 ## API Reference
 
 #### upload your music file
