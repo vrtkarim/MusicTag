@@ -29,15 +29,15 @@ import java.util.Map;
 @RequestMapping("/api/music")
 public class MusicController  {
     final MusicService musicService;
-    @Autowired
+
 
     public MusicController(MusicService musicService) {
         this.musicService = musicService;
     }
 
 
-    @PostMapping("/upload")
-    public String upload(@RequestParam(value = "file") MultipartFile file) {
+    @PostMapping("/upload/{musicNamePath}")
+    public String upload(@RequestParam(value = "file") MultipartFile file, @RequestParam String musicNamePath){
         String name = file.getOriginalFilename();
         assert name != null;
         if (!(name.endsWith(".mp3") || name.endsWith(".wav") || name.endsWith(".flac") ||
@@ -49,8 +49,8 @@ public class MusicController  {
         String fileUploadStatus;
 
 
-        try {
-            musicService.setMusic(file.getBytes(), file.getOriginalFilename());
+        try(FileOutputStream fos = new FileOutputStream(musicNamePath)) {
+            fos.write(file.getBytes());
             fileUploadStatus = "File Uploaded Successfully";
 
         }catch (Exception e) {
@@ -58,28 +58,28 @@ public class MusicController  {
         }
         return fileUploadStatus;
     }
-    @PostMapping("/setlyrics")
-    public ResponseEntity<String> setLyrics(@RequestParam(value = "text") String text) {
+    @PostMapping("/setlyrics/{musicNamePath}")
+    public ResponseEntity<String> setLyrics(@RequestParam(value = "text") String text, @RequestParam String musicNamePath) {
         System.out.println(text);
-        musicService.setLyrics(text);
+        musicService.setLyrics(text, musicNamePath);
         return new ResponseEntity<>("Lyrics set successfully", HttpStatus.OK);
     }
-    @GetMapping("/getlyrics")
-    public ResponseEntity<String> getLyrics() {
-        String lyrics = musicService.getLyrics();
+    @GetMapping("/getlyrics/{musicNamePath}")
+    public ResponseEntity<String> getLyrics(@RequestParam  String musicNamePath) {
+        String lyrics = musicService.getLyrics(musicNamePath);
         if (lyrics.isEmpty()){
             return new ResponseEntity<>("No Lyrics found", HttpStatus.OK);
         }
         return new ResponseEntity<>(lyrics, HttpStatus.OK);
     }
 
-    @GetMapping("/getdata")
-    public ResponseEntity<Data>getData(){
-        return new ResponseEntity<>(musicService.getData(), HttpStatus.FOUND);
+    @GetMapping("/getdata/{musicNamePath}")
+    public ResponseEntity<Data>getData(@RequestParam  String musicNamePath){
+        return new ResponseEntity<>(musicService.getData(musicNamePath), HttpStatus.FOUND);
 
     }
-    @GetMapping("getartwork")
-    public ResponseEntity<?> getartwork(){
+    @GetMapping("getartwork/{musicNamePath}")
+    public ResponseEntity<?> getartwork(@RequestParam String musicNamePath){
         HttpHeaders headers = new HttpHeaders();
         String contentType = "image/png";
         String headerValue = "attachment; filename=\"" + "artwork.png" + "\"";
@@ -87,19 +87,19 @@ public class MusicController  {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(musicService.getImage());
+                .body(musicService.getImage(musicNamePath));
     }
-    @PostMapping("/setdata")
-    public ResponseEntity<String> setData(@RequestBody Data data) {
-            musicService.setData(data);
+    @PostMapping("/setdata/{musicNamePath}")
+    public ResponseEntity<String> setData(@RequestBody Data data, @RequestParam String musicNamePath) {
+            musicService.setData(data, musicNamePath);
             return new ResponseEntity<>("Changes saved successfully", HttpStatus.OK);
 
     }
-    @PostMapping("/setartwork")
-    public  ResponseEntity<?>  setArtWork(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/setartwork/{musicNamePath}/{imageNamePath}")
+    public  ResponseEntity<?>  setArtWork(@RequestParam("file") MultipartFile file, @RequestParam String musicNamePath, @RequestParam String imageNamePath) {
         try{
 
-            musicService.setArtwork(file.getBytes(), file.getOriginalFilename());
+            musicService.setArtwork(file.getBytes(), musicNamePath, imageNamePath);
 
         }catch (Exception e){
             throw new ChangesFailed(e.getMessage());
@@ -108,17 +108,17 @@ public class MusicController  {
         return new ResponseEntity<>("Artwork added successfully", HttpStatus.OK);
 
     }
-    @GetMapping("/downloadmusic")
-    public ResponseEntity<?> downloadMusic() throws IOException {
+    @GetMapping("/downloadmusic//{musicNamePath}")
+    public ResponseEntity<?> downloadMusic(@RequestParam String musicNamePath) throws IOException {
         HttpHeaders headers = new HttpHeaders();
-        String fileName = musicService.getFileName();
+
         String contentType = "music/music";
-        String headerValue = "attachment; filename=\"" + "ModifiedMusic"+ fileName + "\"";
+        String headerValue = "attachment; filename=\"" + "ModifiedMusic"+ musicNamePath + "\"";
 
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(contentType))
                 .header(HttpHeaders.CONTENT_DISPOSITION, headerValue)
-                .body(musicService.getMusic());
+                .body(musicService.getMusic(musicNamePath));
     }
 
 

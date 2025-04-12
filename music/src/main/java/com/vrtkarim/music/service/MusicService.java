@@ -12,16 +12,15 @@ import java.io.IOException;
 import java.util.Map;
 
 public interface MusicService {
-    Data getData();
-    byte[] getImage();
-    void setData(Data data);
-    void setArtwork(byte[] artwork, String name);
+    Data getData(String musicPathName);
+    byte[] getImage(String musicPathName);
+    void setData(Data data,String musicPathName);
+    void setArtwork(byte[] artwork, String musicPathName, String imagePathName);
 
-    void setMusic (byte[] bytes, String name);
-    byte[] getMusic();
-    String getFileName();
-    void setLyrics(String lyrics);
-    String getLyrics();
+    byte[] getMusic(String musicPathName);
+
+    void setLyrics(String lyrics, String musicPathName);
+    String getLyrics(String musicPathName);
 
 
 

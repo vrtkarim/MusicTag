@@ -18,29 +18,30 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public Data getData(){
+    public Data getData(String musicNamePath){
 
         try {
-            return musicRepository.getMusicData();
+            return musicRepository.getMusicData(musicNamePath);
         }catch (Exception e){
             throw new FileError(e.getMessage()) ;
         }
     }
 
     @Override
-    public byte[] getImage(){
+    public byte[] getImage(String musicNamePath){
         try {
-            return musicRepository.getArtWork();
+            return musicRepository.getArtWork(musicNamePath);
         }catch (Exception e){
             throw new FileError(e.getMessage()) ;
         }
     }
 
     @Override
-    public void setData(Data data){
+    public void setData(Data data, String musicPathName){
         try {
             musicRepository.setData(
-                    data
+
+                    data, musicPathName
             );
         }catch (Exception e){
             throw new UploadFailed(e.getMessage());
@@ -48,39 +49,38 @@ public class ServiceImplementation implements MusicService{
     }
 
     @Override
-    public void setArtwork(byte[] artwork, String name){
+    public void setArtwork(byte[] artwork, String imageNamePath, String musicNamePath){
         try{
-            musicRepository.setImage(artwork, name);
-            musicRepository.setArtWork();
+
+            musicRepository.setArtWork(artwork, musicNamePath, imageNamePath);
         }catch (Exception e){
             throw new UploadFailed(e.getMessage());
         }
 
     }
 
+
+
     @Override
-    public void setMusic(byte[] bytes, String name) {
-        musicRepository.setMusic(bytes,name);
+    public byte[] getMusic(String musicNamePath) {
+        try {
+            return musicRepository.getMusic(musicNamePath);
+        }catch (Exception e){
+            throw new UploadFailed(e.getMessage());
+
+        }
+    }
+
+
+
+    @Override
+    public void setLyrics(String lyrics, String musicNamePath) {
+        musicRepository.setLyrics(lyrics, musicNamePath);
     }
 
     @Override
-    public byte[] getMusic() {
-        return musicRepository.getMusic();
-    }
-
-    @Override
-    public String getFileName() {
-        return musicRepository.getFileName();
-    }
-
-    @Override
-    public void setLyrics(String lyrics) {
-        musicRepository.setLyrics(lyrics);
-    }
-
-    @Override
-    public String getLyrics() {
-        return musicRepository.getLyrics();
+    public String getLyrics(String musicNamePath) {
+        return musicRepository.getLyrics(musicNamePath);
     }
 
 
