@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,13 +46,14 @@ public class MusicRepository {
                 .comment(tag.getFirst(FieldKey.COMMENT)).composer(tag.getFirst(FieldKey.COMPOSER)).build();
     }
     public byte[] getArtWork(String pathname) throws CannotReadException, TagException, InvalidAudioFrameException, ReadOnlyFileException, IOException {
-        File music = new File(pathname);
-        AudioFile audioFile = AudioFileIO.read(music);
+
+        AudioFile audioFile = AudioFileIO.read(new File(pathname));
         Tag tag = audioFile.getTag();
         Artwork artwork = tag.getFirstArtwork();
 
 
         if (artwork != null) {
+            System.out.println(Arrays.toString(artwork.getBinaryData()));
             return artwork.getBinaryData();
         } else {
             System.out.println("No artwork found in the file.");
