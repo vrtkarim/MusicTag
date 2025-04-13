@@ -67,12 +67,12 @@ public class MusicController  {
         }
         return fileUploadStatus;
     }
-    @PostMapping("/setlyrics/{musicNamePath}")
+    @PostMapping("/setlyrics")
     public ResponseEntity<String> setLyrics(@RequestParam(value = "text") String text, @RequestParam String musicNamePath) {
         musicService.setLyrics(text, "dir"+File.separator+ musicNamePath);
         return new ResponseEntity<>("Lyrics set successfully", HttpStatus.OK);
     }
-    @GetMapping("/getlyrics/{musicNamePath}")
+    @GetMapping("/getlyrics")
     public ResponseEntity<String> getLyrics(@RequestParam  String musicNamePath) {
         String lyrics = musicService.getLyrics("dir" +File.separator+ musicNamePath);
         if (lyrics.isEmpty()){
@@ -81,7 +81,7 @@ public class MusicController  {
         return new ResponseEntity<>(lyrics, HttpStatus.OK);
     }
 
-    @GetMapping("/getdata/{musicNamePath}")
+    @GetMapping("/getdata")
     public ResponseEntity<Data>getData(@RequestParam  String musicNamePath){
         return new ResponseEntity<>(musicService.getData("dir"+ File.separator+ musicNamePath), HttpStatus.FOUND);
 
@@ -103,7 +103,7 @@ public class MusicController  {
             return new ResponseEntity<>("Changes saved successfully", HttpStatus.OK);
 
     }
-    @PostMapping("/setartwork/{musicNamePath}/{imageNamePath}")
+    @PostMapping("/setartwork")
     public  ResponseEntity<?>  setArtWork(@RequestParam("file") MultipartFile file, @RequestParam String musicNamePath, @RequestParam String imageNamePath) {
         try{
 
