@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.vrtkarim</groupId>
-	<artifactId>music</artifactId>
+	<artifactId>MusicTag</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>music</name>
+	<name>MusicTag</name>
 	<description>editing music metadata</description>
 	<url/>
 	<licenses>
