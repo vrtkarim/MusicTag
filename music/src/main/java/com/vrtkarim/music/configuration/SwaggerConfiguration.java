@@ -22,15 +22,15 @@ public class SwaggerConfiguration {
         return new Docket(DocumentationType.SWAGGER_2)
                 .apiInfo(this.apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.api.testproject"))
+                .apis(RequestHandlerSelectors.basePackage("com.vrtkarim.musictag"))
                 .paths(PathSelectors.any())
                 .build();
     }
 
     private ApiInfo apiInfo() {
         return new ApiInfoBuilder()
-                .title("test OPEN API Test with Swagger")
-                .description("Swagger Test입니다.")
+                .title("MusicTag")
+                .description("A Spring Boot REST API for reading and manipulating music file metadata with support for all major ID3 tag versions (ID3v1, ID3v2.2, ID3v2.3, ID3v2.4) and other popular audio formats.")
                 .version("1.0.0")
                 .build();
     }
