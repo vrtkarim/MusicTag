@@ -36,8 +36,5 @@ public class SchudelerConfiguration {
         });
 
     }
-    private void deleteSpecificFile(File file){
-       file.delete();
 
-    }
 }
