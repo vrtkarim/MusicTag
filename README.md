@@ -12,7 +12,7 @@ A Spring Boot REST API for reading and manipulating music file metadata with sup
 ## Base URL
 
 ```
-http://localhost:8080
+http://localhost:8080/api/music
 ```
 
 ## Core Endpoints
