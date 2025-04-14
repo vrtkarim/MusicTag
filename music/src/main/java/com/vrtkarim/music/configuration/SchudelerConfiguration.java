@@ -14,6 +14,7 @@ import java.nio.file.attribute.FileTime;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 @Configuration
@@ -22,6 +23,7 @@ public class SchudelerConfiguration {
     @Scheduled(fixedDelay = 1800000)//30 d9i9a
     public void deleteFiles() {
         File dir = new File("dir");
+        if(dir.listFiles()==null) return;
         Stream.of(dir.listFiles()).forEach(f-> {
             try {
                 FileTime fileTime = Files.getLastModifiedTime(Path.of(f.getPath()));
